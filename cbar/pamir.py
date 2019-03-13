@@ -159,7 +159,7 @@ class PAMIR(BaseEstimator):
 
         self._reset_inner_loss()
 
-        for it in xrange(self.max_iter):
+        for it in range(self.max_iter):
             if it % self.valid_interval == 0:
                 p10, ap = self._validate(Q, weights, X_val, Y_val)
                 if ap > self.best_ap:
@@ -177,7 +177,7 @@ class PAMIR(BaseEstimator):
                 if self.verbose:
                     loss = sum(self.inner_loss) / float(self.valid_interval)
                     log = ('iter: {:8}, P10: {:.3f}, AP: {:.3f}, loss: {:.3f}')
-                    print log.format(it, p10, ap, loss)
+                    print(log.format(it, p10, ap, loss))
                 self._reset_inner_loss()
 
             query, relevant, irrelvant = self._sample_triplet(n_queries, Q, X)
@@ -237,7 +237,7 @@ class PAMIR(BaseEstimator):
         Y_score = self.predict(Q_val, X_val)
         Y_score = Y_score[self.at_least_one_relevant]
 
-        for x in xrange(self.Y_true.shape[0]):
+        for x in range(self.Y_true.shape[0]):
             p10.append(ranking_precision_score(self.Y_true[x],
                                                Y_score[x]) * weights[x])
             ap.append(average_precision_score(self.Y_true[x],

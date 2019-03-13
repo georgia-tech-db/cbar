@@ -117,7 +117,7 @@ def fetch_cal500(data_home=None, download_if_missing=True, codebook_size=512):
             songs = [pd.read_csv(tar.extractfile(song),
                                  header=None, delim_whitespace=True)
                      for song in delta]
-            mfccs = pd.concat(songs, keys=range(len(songs)))
+            mfccs = pd.concat(songs, keys=list(range(len(songs))))
             X = quantize_mfccs(mfccs, n_clusters=codebook_size)
             X.to_pickle(file_path)
 

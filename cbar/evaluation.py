@@ -51,18 +51,18 @@ class Evaluator(object):
         ap = []
         prec = defaultdict(list)
 
-        for x in xrange(Y_true.shape[0]):
-            self.rel_prec[n_relevant[x]].append(
+        for x in range(Y_true.shape[0]):
+            self.rel_prec[int(n_relevant[x])].append(
                 ranking_precision_score(Y_true[x], Y_score[x]))
 
-            for k in xrange(1, 21):
+            for k in range(1, 21):
                 prec[k].append(ranking_precision_score(
                                   Y_true[x], Y_score[x], k) * weights[x])
             ap.append(average_precision_score(Y_true[x],
                                               Y_score[x]) * weights[x])
         self.mean_ap.append(np.sum(ap))
 
-        for k, v in prec.iteritems():
+        for k, v in prec.items():
             self.prec_at[k].append(np.sum(v))
 
     def to_json(self, dataset, method, codebook_size, params):
