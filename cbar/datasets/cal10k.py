@@ -125,15 +125,15 @@ def fetch_cal10k(data_home=None, download_if_missing=True,
         train = _get_annotations(tags.open('fold_{}_train.tab'.format(fold)))
         test = _get_annotations(tags.open('fold_{}_test.tab'.format(fold)))
 
-    train_ids = le.transform(train.keys())
-    test_ids = le.transform(test.keys())
+    train_ids = le.transform(list(train.keys()))
+    test_ids = le.transform(list(test.keys()))
 
     X_train = X.iloc[train_ids]
     X_test = X.iloc[test_ids]
 
     mlb = MultiLabelBinarizer()
-    Y_train = mlb.fit_transform(train.values())
-    Y_test = mlb.transform(test.values())
+    Y_train = mlb.fit_transform(list(train.values()))
+    Y_test = mlb.transform(list(test.values()))
 
     return X_train, X_test, Y_train, Y_test
 
@@ -143,7 +143,7 @@ def _read_cal10k_from_disk(data_path, le):
         songs = {le.transform(_clean(f_name)): pd.read_csv(data.open(f_name),
                                                            header=None)
                  for f_name in data.namelist()[1:]}
-        mfccs = pd.concat(songs.values(), keys=songs.keys())
+        mfccs = pd.concat(list(songs.values()), keys=list(songs.keys()))
         delta1 = pd.DataFrame(delta(mfccs))
         delta2 = pd.DataFrame(delta(mfccs, order=2))
         mfccs.index.set_names(['song', 'frame'], inplace=True)

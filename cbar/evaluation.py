@@ -51,18 +51,18 @@ class Evaluator(object):
         ap = []
         prec = defaultdict(list)
 
-        for x in xrange(Y_true.shape[0]):
+        for x in range(Y_true.shape[0]):
             self.rel_prec[n_relevant[x]].append(
                 ranking_precision_score(Y_true[x], Y_score[x]))
 
-            for k in xrange(1, 21):
+            for k in range(1, 21):
                 prec[k].append(ranking_precision_score(
                                   Y_true[x], Y_score[x], k) * weights[x])
             ap.append(average_precision_score(Y_true[x],
                                               Y_score[x]) * weights[x])
         self.mean_ap.append(np.sum(ap))
 
-        for k, v in prec.iteritems():
+        for k, v in prec.items():
             self.prec_at[k].append(np.sum(v))
 
     def to_json(self, dataset, method, codebook_size, params):
@@ -83,14 +83,26 @@ class Evaluator(object):
         params: dict
             The ``method``'s parameters used during the evaluation.
         """
-        self._to_json(join(RESULTS_DIR, '{}_precision.json'.format(dataset)),
-                      method, params, codebook_size, self.prec_at)
+        try:
+            self._to_json(join(RESULTS_DIR, '{}_precision.json'.format(dataset)),
+                        method, params, codebook_size, self.prec_at)
+        except Exception as e:
+            print(self.prec_at)
+            raise e
 
-        self._to_json(join(RESULTS_DIR, '{}_mean_ap.json'.format(dataset)),
-                      method, params, codebook_size, self.mean_ap)
+        try:
+            self._to_json(join(RESULTS_DIR, '{}_mean_ap.json'.format(dataset)),
+                          method, params, codebook_size, self.mean_ap)
+        except Exception as e:
+            print(self.mean_ap)
+            raise e
 
-        self._to_json(join(RESULTS_DIR, '{}_prec_at_rel.json'.format(dataset)),
-                      method, params, codebook_size, self.rel_prec)
+        try:
+            self._to_json(join(RESULTS_DIR, '{}_prec_at_rel.json'.format(dataset)),
+                        method, params, codebook_size, self.rel_prec)
+        except Exception as e:
+            print(self.rel_prec)
+            raise e
 
     def _check_exists(self, filename):
         try:
@@ -113,6 +125,8 @@ class Evaluator(object):
         with open(filename, 'r+') as f:
             dic = json.load(f)
             dic.update(self._stats(name, params, cb_size, precision))
+
+        print(dic)
 
         with open(filename, 'w+') as f:
             json.dump(dic, f, indent=4)
@@ -148,4 +162,4 @@ def ranking_precision_score(y_true, y_score, k=10):
     y_true = y_true[order[:k]]
     n_relevant = (y_true == pos_label).sum()
     # Divide by min(n_pos, k) so that the best achievable score is always 1.0
-    return float(n_relevant) / min(n_pos, k)
+    return float(float(n_relevant) / min(n_pos, k))

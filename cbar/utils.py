@@ -190,5 +190,5 @@ def save_model(clf, name):
 def load_model(name):
     try:
         return joblib.load(_absolute_model_file_path_for(name))
-    except Exception, e:
+    except Exception as e:
         raise e

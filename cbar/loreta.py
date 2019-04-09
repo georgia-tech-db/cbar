@@ -244,7 +244,7 @@ class LoretaWARP(BaseEstimator):
         self._relevance_matrix = make_relevance_matrix(Q, Y)
         self.Y_true = make_relevance_matrix(Q, Y_val)
 
-        for it in xrange(self.max_iter):
+        for it in range(self.max_iter):
             stepsize = self._stepsize(it)
 
             if it % self.valid_interval == 0:
@@ -270,7 +270,7 @@ class LoretaWARP(BaseEstimator):
                 if self.verbose:
                     log = ('iter: {:8}, stepsize: {:8.3f}, P10: {:.3f}, '
                            'AP: {:.3f}, loss: {:.3f}')
-                    print log.format(it, stepsize, p10, ap, loss)
+                    print(log.format(it, stepsize, p10, ap, loss))
                 self._reset_inner_loss()
 
             qid = np.random.choice(n_queries)
@@ -302,7 +302,7 @@ class LoretaWARP(BaseEstimator):
 
     def _get_violator_gradient(self, query, rel, stepsize, violator):
         n_drawn, n_irr, rel_minus_irr = violator
-        rank_relevant = n_irr / n_drawn
+        rank_relevant = int(n_irr / n_drawn)
         loss_value = (self.loss_table[rank_relevant] / self.loss_table[n_irr])
         self.inner_loss.append(loss_value)
         return (stepsize * loss_value * query, rel_minus_irr)
@@ -328,7 +328,7 @@ class LoretaWARP(BaseEstimator):
         p10 = []
         ap = []
         Y_score = self.predict(Q_val, X_val)
-        for x in xrange(self.Y_true.shape[0]):
+        for x in range(self.Y_true.shape[0]):
             p10.append(ranking_precision_score(self.Y_true[x],
                                                Y_score[x]) * weights[x])
             ap.append(average_precision_score(self.Y_true[x],
@@ -454,7 +454,7 @@ class LoretaWARP(BaseEstimator):
         n_irrelevant = len(irrelevant_indices)
         tau = max(1, np.floor(n_irrelevant * self.rank_thresh))
 
-        for n_drawn in xrange(1, int(tau) + 1):
+        for n_drawn in range(1, int(tau) + 1):
             irr_id = np.random.choice(irrelevant_indices)
             rel_minus_irr = X[rel_id] - X[irr_id]
 

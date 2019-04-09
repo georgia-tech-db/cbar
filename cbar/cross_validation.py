@@ -2,13 +2,12 @@ import logging
 import sys
 
 import numpy as np
-from sklearn.cross_validation import KFold
 from sklearn.preprocessing import (
     MultiLabelBinarizer,
     RobustScaler,
     StandardScaler,
 )
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import train_test_split, KFold
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.utils.multiclass import is_multilabel
@@ -84,10 +83,10 @@ def cross_validate(dataset, codebook_size, mwq, threshold, n_folds,
 
     X, Y = load_dataset(dataset, codebook_size)
     n_samples, n_features = X.shape
-    kf = KFold(n_samples, n_folds=n_folds, shuffle=True, random_state=SEED)
+    kf = KFold(n_splits=n_folds, shuffle=True, random_state=SEED)
     evaluator = Evaluator()
 
-    for idx, (train_idx, test_idx) in enumerate(kf):
+    for idx, (train_idx, test_idx) in enumerate(kf.split(X)):
         logging.info('Validating fold {} ...'.format(idx))
 
         (X_train, X_test,
@@ -102,13 +101,13 @@ def cross_validate(dataset, codebook_size, mwq, threshold, n_folds,
                                retrieval_method,
                                **kwargs)
 
-    evaluator.to_json(dataset, retrieval_method, codebook_size, params)
+    evaluator.to_json(dataset, retrieval_method, int(codebook_size), params)
 
 
 def cross_validate_cal10k(cb_size, threshold, retrieval_method, **kwargs):
     evaluator = Evaluator()
 
-    for i in xrange(1, 6):
+    for i in range(1, 6):
         X_train, X_test, Y_train, Y_test = fetch_cal10k(fold=i,
                                                         codebook_size=cb_size)
         (X_train, X_test,
