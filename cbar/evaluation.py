@@ -98,10 +98,12 @@ class Evaluator(object):
             raise e
 
         try:
+            self.rel_prec = {str(key): value for key, value in self.rel_prec.items()}
             self._to_json(join(RESULTS_DIR, '{}_prec_at_rel.json'.format(dataset)),
                         method, params, codebook_size, self.rel_prec)
         except Exception as e:
             print(self.rel_prec)
+            print(self.rel_prec.keys())
             raise e
 
     def _check_exists(self, filename):
@@ -125,8 +127,6 @@ class Evaluator(object):
         with open(filename, 'r+') as f:
             dic = json.load(f)
             dic.update(self._stats(name, params, cb_size, precision))
-
-        print(dic)
 
         with open(filename, 'w+') as f:
             json.dump(dic, f, indent=4)
